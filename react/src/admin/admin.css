@@ -1,0 +1,169 @@
+.admin-page {
+  min-height: 100vh;
+  padding: clamp(20px, 5vw, 56px);
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.admin-login {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-login form {
+  display: grid;
+  gap: 16px;
+  width: 100%;
+  max-width: 340px;
+}
+
+.admin-login label {
+  display: grid;
+  gap: 6px;
+  font-size: 14px;
+}
+
+.admin-page input[type="password"],
+.admin-page input[type="text"] {
+  background: var(--navy-card);
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: #fff;
+  font-size: 15px;
+}
+
+.admin-page input[type="file"] {
+  color: #fff;
+  font-size: 14px;
+}
+
+.admin-page button {
+  background: var(--pink);
+  color: var(--navy);
+  border: none;
+  border-radius: 999px;
+  padding: 10px 22px;
+  font-weight: 700;
+  cursor: pointer;
+  width: fit-content;
+}
+
+.admin-page button:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+.admin-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.admin-logout {
+  background: transparent !important;
+  color: var(--pink) !important;
+  border: 1px solid var(--pink) !important;
+}
+
+.admin-section {
+  background: var(--navy-card);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+  display: grid;
+  gap: 14px;
+}
+
+.admin-hint {
+  opacity: .75;
+  font-size: 13px;
+  margin: 0;
+}
+
+.admin-error {
+  color: #ff9db8;
+  font-size: 14px;
+  margin: 0;
+}
+
+.admin-result {
+  font-size: 14px;
+}
+
+.admin-table-wrap {
+  overflow-x: auto;
+}
+
+.admin-table {
+  border-collapse: collapse;
+  font-size: 13px;
+  width: 100%;
+}
+
+.admin-table th,
+.admin-table td {
+  border: 1px solid rgba(255,255,255,.15);
+  padding: 6px 10px;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.admin-image-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.admin-image-status {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  font-size: 13px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: rgba(255,255,255,.04);
+}
+
+.admin-image-status--ok { color: #9df9c8; }
+.admin-image-status--erro { color: #ff9db8; }
+.admin-image-status--enviando { color: var(--pink); }
+
+.admin-image-name { font-weight: 600; }
+.admin-image-state { opacity: .8; text-transform: uppercase; font-size: 11px; }
+.admin-image-message { opacity: .7; }
+
+.admin-price-input {
+  width: 90px;
+  background: var(--navy);
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 6px;
+  padding: 6px 8px;
+  color: #fff;
+  font-size: 13px;
+}
+
+.admin-status-toggle {
+  border-radius: 999px !important;
+  padding: 6px 14px !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  width: auto !important;
+}
+
+.admin-status-toggle--disponivel {
+  background: #9df9c8 !important;
+  color: var(--navy) !important;
+}
+
+.admin-status-toggle--indisponivel {
+  background: transparent !important;
+  color: #ff9db8 !important;
+  border: 1px solid #ff9db8 !important;
+}
