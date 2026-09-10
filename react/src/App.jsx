@@ -15,11 +15,15 @@ export default function App() {
   useEffect(() => {
     supabase
       .from('pieces')
-      .select('*')
+      .select('*, piece_images(id, url, created_at)')
       .order('created_at', { ascending: false })
+      .order('created_at', { ascending: true, referencedTable: 'piece_images' })
       .then(({ data, error }) => {
-        if (error) setLoadError(error.message);
-        else setPieces(data ?? []);
+        if (error) {
+          setLoadError(error.message);
+        } else {
+          setPieces((data ?? []).map((p) => ({ ...p, images: p.piece_images ?? [] })));
+        }
         setLoading(false);
       });
   }, []);

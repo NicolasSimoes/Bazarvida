@@ -45,7 +45,7 @@ vercel env pull .env
 2. Copiar `DATABASE_URL` (Project Settings → Database → Connection string → URI,
    com a senha do banco já preenchida no lugar de `[YOUR-PASSWORD]`, sem colchetes)
    pro `react/.env`.
-3. Rodar a migração (cria a tabela `pieces`, com a coluna `status`, e a policy de
+3. Rodar a migração (cria as tabelas `pieces` e `piece_images`, com as policies de
    leitura pública — é idempotente, pode rodar de novo sem problema):
 
 ```bash
@@ -83,14 +83,15 @@ Acesse `/admin`, entre com a senha (`ADMIN_PASSWORD`) e:
    disponibilidade de peças já cadastradas — a coluna `status` (aceita
    "Disponível"/"Indisponível") só define o status inicial de peças **novas**;
    linhas totalmente vazias (comuns em planilhas exportadas do Excel) são ignoradas.
-2. **Fotos**: envie os arquivos nomeados com o `id` da peça (ex: `BR-01.jpg`,
-   `BR-01.png` — qualquer formato, é convertido pra JPEG automaticamente no navegador
-   antes do envio). Fotos de iPhone em `.heic` podem não converter em todos os
+2. **Peças cadastradas**: tabela com todas as peças já no banco. Dá pra editar o
+   **preço** (clique no campo, mude o valor, saia do campo pra salvar), alternar
+   **Disponível ↔ Indisponível** num clique, e clicar em **Fotos (N)** pra abrir o
+   gerenciador de fotos daquela peça: envie quantas imagens quiser (qualquer formato,
+   convertido pra JPEG automaticamente no navegador antes do envio) e apague fotos
+   enviadas por engano. Fotos de iPhone em `.heic` podem não converter em todos os
    navegadores — configure a câmera em Ajustes → Câmera → Formatos → "Mais compatível",
-   ou converta antes de subir.
-3. **Peças cadastradas**: tabela com todas as peças já no banco. Dá pra editar o
-   **preço** (clique no campo, mude o valor, saia do campo pra salvar) e alternar
-   **Disponível ↔ Indisponível** num clique, sem precisar reenviar a planilha.
+   ou converta antes de subir. Peças com mais de uma foto mostram um carrossel
+   deslizável na página pública.
 
 ## Status "Indisponível"
 

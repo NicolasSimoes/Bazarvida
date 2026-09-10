@@ -1,7 +1,10 @@
 import { formatPrice } from '../format.js';
+import ImageCarousel from './ImageCarousel.jsx';
 
 export default function PieceCard({ piece, selected, onToggle }) {
   const disponivel = piece.status !== 'indisponivel';
+  const images = piece.images ?? [];
+  const alt = piece.brand + ' ' + piece.name;
 
   return (
     <div
@@ -17,9 +20,9 @@ export default function PieceCard({ piece, selected, onToggle }) {
       }}
     >
       <div className="thumb">
-        {piece.image_url
-          ? <img src={piece.image_url} alt={piece.brand + ' ' + piece.name} loading="lazy" />
-          : <span className="empty">foto {piece.id}</span>}
+        {images.length === 0 && <span className="empty">foto {piece.id}</span>}
+        {images.length === 1 && <img src={images[0].url} alt={alt} loading="lazy" />}
+        {images.length > 1 && <ImageCarousel images={images} alt={alt} />}
         <span className="tag">{piece.id}</span>
         {disponivel && <span className="checkbox" aria-hidden="true">{selected ? '✓' : ''}</span>}
         {!disponivel && <span className="badge-indisponivel">Indisponível</span>}

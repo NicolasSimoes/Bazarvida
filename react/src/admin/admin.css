@@ -177,3 +177,49 @@
   color: #ff9db8 !important;
   border: 1px solid #ff9db8 !important;
 }
+
+.admin-photos-btn {
+  border-radius: 999px !important;
+  padding: 6px 14px !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  width: auto !important;
+  background: transparent !important;
+  color: var(--pink) !important;
+  border: 1px solid var(--pink) !important;
+}
+
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,.6);
+  display: grid; place-items: center; z-index: 50; padding: 20px;
+}
+
+.modal-panel {
+  background: var(--navy-card); border-radius: 16px; padding: 24px;
+  max-width: 640px; width: 100%; max-height: 85vh; overflow-y: auto;
+  display: grid; gap: 14px;
+}
+
+.modal-header {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+}
+.modal-header h3 { margin: 0; font-size: 17px; }
+
+.modal-close {
+  background: transparent !important; border: none !important; color: #fff !important;
+  font-size: 24px !important; line-height: 1 !important; padding: 0 !important;
+  cursor: pointer;
+}
+
+.piece-images-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 10px;
+}
+
+.piece-image-item { position: relative; aspect-ratio: 3 / 4; border-radius: 10px; overflow: hidden; }
+.piece-image-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.piece-image-item button {
+  position: absolute; top: 6px; right: 6px; width: auto !important;
+  padding: 4px 8px !important; font-size: 11px !important;
+  background: rgba(19,38,79,.75) !important; color: #ff9db8 !important;
+}

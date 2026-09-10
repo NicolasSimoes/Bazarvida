@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import * as XLSX from 'xlsx';
 import { supabase } from '../supabaseClient.js';
+import PieceImagesManager from './PieceImagesManager.jsx';
 import './admin.css';
 
 const SESSION_KEY = 'adminPassword';
@@ -39,29 +40,6 @@ function isBlankRow(row) {
   return Object.values(row).every((v) => String(v ?? '').trim() === '');
 }
 
-async function resizeToJpeg(file, maxWidth = 1400, quality = 0.82) {
-  const bitmap = await createImageBitmap(file);
-  const scale = Math.min(1, maxWidth / bitmap.width);
-  const w = Math.round(bitmap.width * scale);
-  const h = Math.round(bitmap.height * scale);
-  const canvas = document.createElement('canvas');
-  canvas.width = w;
-  canvas.height = h;
-  canvas.getContext('2d').drawImage(bitmap, 0, 0, w, h);
-  return new Promise((resolve) => canvas.toBlob(resolve, 'image/jpeg', quality));
-}
-
-async function runWithConcurrency(items, limit, worker) {
-  const queue = [...items];
-  const runners = Array.from({ length: limit }, async () => {
-    while (queue.length > 0) {
-      const item = queue.shift();
-      await worker(item);
-    }
-  });
-  await Promise.all(runners);
-}
-
 export default function AdminPage() {
   const [password, setPassword] = useState(() => sessionStorage.getItem(SESSION_KEY) || '');
   const [passwordInput, setPasswordInput] = useState('');
@@ -73,15 +51,14 @@ export default function AdminPage() {
   const [sheetResult, setSheetResult] = useState(null);
   const [sendingSheet, setSendingSheet] = useState(false);
 
-  const [imageStatuses, setImageStatuses] = useState([]);
-  const [sendingImages, setSendingImages] = useState(false);
-
   const [pieces, setPieces] = useState([]);
   const [piecesLoading, setPiecesLoading] = useState(false);
   const [piecesError, setPiecesError] = useState(null);
   const [savingId, setSavingId] = useState(null);
   const [priceDrafts, setPriceDrafts] = useState({});
   const [piecesSearch, setPiecesSearch] = useState('');
+  const [imageCounts, setImageCounts] = useState({});
+  const [managingPiece, setManagingPiece] = useState(null);
 
   const authenticated = Boolean(password);
 
@@ -94,8 +71,18 @@ export default function AdminPage() {
     setPiecesLoading(false);
   }
 
+  async function loadImageCounts() {
+    const { data } = await supabase.from('piece_images').select('piece_id');
+    const counts = {};
+    for (const row of data ?? []) counts[row.piece_id] = (counts[row.piece_id] ?? 0) + 1;
+    setImageCounts(counts);
+  }
+
   useEffect(() => {
-    if (authenticated) loadPieces();
+    if (authenticated) {
+      loadPieces();
+      loadImageCounts();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authenticated]);
 
@@ -221,52 +208,6 @@ export default function AdminPage() {
     );
   }, [pieces, piecesSearch]);
 
-  async function handleImageFiles(e) {
-    const files = Array.from(e.target.files || []);
-    if (files.length === 0) return;
-
-    const initial = files.map((f) => ({
-      name: f.name,
-      status: 'pendente',
-      message: ''
-    }));
-    setImageStatuses(initial);
-    setSendingImages(true);
-
-    function updateStatus(name, patch) {
-      setImageStatuses((prev) => prev.map((s) => (s.name === name ? { ...s, ...patch } : s)));
-    }
-
-    await runWithConcurrency(files, 3, async (file) => {
-      const id = file.name.replace(/\.[^.]+$/, '');
-      const filename = id + '.jpg';
-      updateStatus(file.name, { status: 'enviando' });
-      try {
-        const blob = await resizeToJpeg(file);
-        const res = await fetch('/api/admin/upload-image?filename=' + encodeURIComponent(filename), {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/octet-stream', 'x-admin-password': password },
-          body: blob
-        });
-        const body = await res.json();
-        if (!res.ok) {
-          updateStatus(file.name, { status: 'erro', message: body.error || 'falha' });
-          return;
-        }
-        updateStatus(file.name, {
-          status: 'ok',
-          message: body.vinculado ? 'vinculada à peça ' + body.id : 'peça ' + body.id + ' não encontrada ainda'
-        });
-      } catch (err) {
-        updateStatus(file.name, { status: 'erro', message: err.message });
-      }
-    });
-
-    setSendingImages(false);
-  }
-
-  const imagesSent = imageStatuses.filter((s) => s.status === 'ok' || s.status === 'erro').length;
-
   if (!authenticated) {
     return (
       <div className="admin-page admin-login">
@@ -353,34 +294,10 @@ export default function AdminPage() {
       </section>
 
       <section className="admin-section">
-        <h2>2. Fotos das peças</h2>
+        <h2>2. Peças cadastradas</h2>
         <p className="admin-hint">
-          Selecione as fotos nomeadas com o id da peça (ex: BR-01.jpg). Qualquer formato de imagem é
-          convertido para JPEG automaticamente antes do envio.
-        </p>
-        <input type="file" accept="image/*" multiple onChange={handleImageFiles} />
-
-        {imageStatuses.length > 0 && (
-          <>
-            <p className="admin-hint">{imagesSent} de {imageStatuses.length} enviada(s)</p>
-            <ul className="admin-image-list">
-              {imageStatuses.map((s) => (
-                <li key={s.name} className={'admin-image-status admin-image-status--' + s.status}>
-                  <span className="admin-image-name">{s.name}</span>
-                  <span className="admin-image-state">{s.status}</span>
-                  {s.message && <span className="admin-image-message">{s.message}</span>}
-                </li>
-              ))}
-            </ul>
-          </>
-        )}
-        {sendingImages && <p className="admin-hint">Enviando imagens…</p>}
-      </section>
-
-      <section className="admin-section">
-        <h2>3. Peças cadastradas</h2>
-        <p className="admin-hint">
-          Ajuste preço ou disponibilidade sem precisar reenviar a planilha inteira.
+          Ajuste preço ou disponibilidade sem precisar reenviar a planilha inteira, e clique em
+          "Fotos" pra subir ou apagar as fotos de cada peça.
           Peças "Indisponível" continuam aparecendo na página pública, só ficam travadas pra seleção.
         </p>
 
@@ -407,7 +324,7 @@ export default function AdminPage() {
             <table className="admin-table admin-table-pieces">
               <thead>
                 <tr>
-                  <th>id</th><th>nome</th><th>marca</th><th>preço</th><th>status</th>
+                  <th>id</th><th>nome</th><th>marca</th><th>preço</th><th>status</th><th>fotos</th>
                 </tr>
               </thead>
               <tbody>
@@ -436,6 +353,11 @@ export default function AdminPage() {
                         {p.status === 'indisponivel' ? 'Indisponível' : 'Disponível'}
                       </button>
                     </td>
+                    <td>
+                      <button className="admin-photos-btn" onClick={() => setManagingPiece(p)}>
+                        Fotos ({imageCounts[p.id] ?? 0})
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -451,6 +373,15 @@ export default function AdminPage() {
           <p className="admin-hint">Nenhuma peça encontrada para "{piecesSearch}".</p>
         )}
       </section>
+
+      {managingPiece && (
+        <PieceImagesManager
+          piece={managingPiece}
+          password={password}
+          onClose={() => setManagingPiece(null)}
+          onChanged={loadImageCounts}
+        />
+      )}
     </div>
   );
 }
