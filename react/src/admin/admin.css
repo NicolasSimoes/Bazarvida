@@ -149,6 +149,11 @@
   font-size: 13px;
 }
 
+.admin-table-pieces td:nth-child(2) {
+  white-space: normal;
+  min-width: 160px;
+}
+
 .admin-status-toggle {
   border-radius: 999px !important;
   padding: 6px 14px !important;
