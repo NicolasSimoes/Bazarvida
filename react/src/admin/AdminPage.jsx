@@ -81,6 +81,7 @@ export default function AdminPage() {
   const [piecesError, setPiecesError] = useState(null);
   const [savingId, setSavingId] = useState(null);
   const [priceDrafts, setPriceDrafts] = useState({});
+  const [piecesSearch, setPiecesSearch] = useState('');
 
   const authenticated = Boolean(password);
 
@@ -211,6 +212,14 @@ export default function AdminPage() {
   }
 
   const preview = useMemo(() => rows.slice(0, 10), [rows]);
+
+  const filteredPieces = useMemo(() => {
+    const q = stripAccents(piecesSearch);
+    if (!q) return pieces;
+    return pieces.filter((p) =>
+      [p.id, p.name, p.brand].some((v) => stripAccents(String(v ?? '')).includes(q))
+    );
+  }, [pieces, piecesSearch]);
 
   async function handleImageFiles(e) {
     const files = Array.from(e.target.files || []);
@@ -379,6 +388,21 @@ export default function AdminPage() {
         {piecesLoading && <p className="admin-hint">Carregando…</p>}
 
         {!piecesLoading && pieces.length > 0 && (
+          <>
+            <input
+              type="text"
+              className="admin-search"
+              placeholder="Buscar por id, nome ou marca…"
+              value={piecesSearch}
+              onChange={(e) => setPiecesSearch(e.target.value)}
+            />
+            <p className="admin-hint">
+              {filteredPieces.length} de {pieces.length} peça(s)
+            </p>
+          </>
+        )}
+
+        {!piecesLoading && filteredPieces.length > 0 && (
           <div className="admin-table-wrap">
             <table className="admin-table admin-table-pieces">
               <thead>
@@ -387,7 +411,7 @@ export default function AdminPage() {
                 </tr>
               </thead>
               <tbody>
-                {pieces.map((p) => (
+                {filteredPieces.map((p) => (
                   <tr key={p.id}>
                     <td>{p.id}</td>
                     <td>{p.name}</td>
@@ -421,6 +445,10 @@ export default function AdminPage() {
 
         {!piecesLoading && pieces.length === 0 && !piecesError && (
           <p className="admin-hint">Nenhuma peça cadastrada ainda.</p>
+        )}
+
+        {!piecesLoading && pieces.length > 0 && filteredPieces.length === 0 && (
+          <p className="admin-hint">Nenhuma peça encontrada para "{piecesSearch}".</p>
         )}
       </section>
     </div>

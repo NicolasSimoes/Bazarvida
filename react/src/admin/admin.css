@@ -93,6 +93,11 @@
   font-size: 14px;
 }
 
+.admin-search {
+  width: 100%;
+  max-width: 320px;
+}
+
 .admin-table-wrap {
   overflow-x: auto;
 }
