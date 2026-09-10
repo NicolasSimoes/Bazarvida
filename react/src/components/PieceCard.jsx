@@ -27,7 +27,7 @@ export default function PieceCard({ piece, selected, onToggle }) {
       <div className="body">
         <span className="brand">{piece.brand}</span>
         <span className="name">{piece.name}</span>
-        <span className="meta">Tam. {piece.size} · {piece.condition}</span>
+        <span className="meta">Tam. {piece.size}{piece.condition ? ' · ' + piece.condition : ''}</span>
         <div className="foot">
           <span className="price">{formatPrice(piece.price)}</span>
           <span className="cta">

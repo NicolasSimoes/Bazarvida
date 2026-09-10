@@ -76,10 +76,13 @@ Os filtros de categoria são gerados automaticamente a partir do campo `cat` das
 Acesse `/admin`, entre com a senha (`ADMIN_PASSWORD`) e:
 
 1. **Planilha**: envie um `.xlsx` (recomendado) ou `.csv` com colunas
-   `id, nome, marca, categoria, preço, tamanho, condição`. O `id` precisa ser único —
-   é ele que aparece na mensagem do WhatsApp e que liga a peça à sua foto. Reenviar
-   a planilha atualiza as peças existentes (mesmo `id`) em vez de duplicar, e **não
-   mexe no status** de disponibilidade de peças já cadastradas.
+   `id, nome (ou produtos), marca, categoria, preço, tamanho` e, opcionalmente,
+   `condição` e `status`. O `id` precisa ser único — é ele que aparece na mensagem
+   do WhatsApp e que liga a peça à sua foto. Reenviar a planilha atualiza as peças
+   existentes (mesmo `id`) em vez de duplicar, e **não mexe no status** de
+   disponibilidade de peças já cadastradas — a coluna `status` (aceita
+   "Disponível"/"Indisponível") só define o status inicial de peças **novas**;
+   linhas totalmente vazias (comuns em planilhas exportadas do Excel) são ignoradas.
 2. **Fotos**: envie os arquivos nomeados com o `id` da peça (ex: `BR-01.jpg`,
    `BR-01.png` — qualquer formato, é convertido pra JPEG automaticamente no navegador
    antes do envio). Fotos de iPhone em `.heic` podem não converter em todos os

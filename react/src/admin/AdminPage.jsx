@@ -7,12 +7,13 @@ const SESSION_KEY = 'adminPassword';
 
 const HEADER_MAP = {
   id: ['id'],
-  nome: ['nome', 'name'],
+  nome: ['nome', 'name', 'produtos', 'produto'],
   marca: ['marca', 'brand'],
   categoria: ['categoria', 'cat'],
   preco: ['preço', 'preco', 'price'],
   tamanho: ['tamanho', 'size'],
-  condicao: ['condição', 'condicao', 'condition']
+  condicao: ['condição', 'condicao', 'condition'],
+  status: ['status']
 };
 
 const COMBINING_MARKS = new RegExp(
@@ -32,6 +33,10 @@ function normalizeRow(raw) {
     out[canon] = found ? keysByStrip[found] : '';
   }
   return out;
+}
+
+function isBlankRow(row) {
+  return Object.values(row).every((v) => String(v ?? '').trim() === '');
 }
 
 async function resizeToJpeg(file, maxWidth = 1400, quality = 0.82) {
@@ -173,7 +178,7 @@ export default function AdminPage() {
       const wb = XLSX.read(buf, { type: 'array' });
       const sheet = wb.Sheets[wb.SheetNames[0]];
       const raw = XLSX.utils.sheet_to_json(sheet, { defval: '' });
-      setRows(raw.map(normalizeRow));
+      setRows(raw.map(normalizeRow).filter((r) => !isBlankRow(r)));
     } catch (err) {
       setSheetError('Não foi possível ler o arquivo: ' + err.message);
       setRows([]);
@@ -286,7 +291,9 @@ export default function AdminPage() {
       <section className="admin-section">
         <h2>1. Planilha de peças</h2>
         <p className="admin-hint">
-          Colunas esperadas: id, nome, marca, categoria, preço, tamanho, condição.
+          Colunas esperadas: id, nome (ou produtos), marca, categoria, preço, tamanho e,
+          opcionalmente, condição e status (Disponível/Indisponível — só é usado para
+          peças novas, não altera o status de peças já cadastradas).
           Formato recomendado: .xlsx (também aceita .csv).
         </p>
         <input type="file" accept=".csv,.xlsx" onChange={handleSheetFile} />
@@ -300,14 +307,14 @@ export default function AdminPage() {
               <table className="admin-table">
                 <thead>
                   <tr>
-                    <th>id</th><th>nome</th><th>marca</th><th>categoria</th><th>preço</th><th>tamanho</th><th>condição</th>
+                    <th>id</th><th>nome</th><th>marca</th><th>categoria</th><th>preço</th><th>tamanho</th><th>condição</th><th>status</th>
                   </tr>
                 </thead>
                 <tbody>
                   {preview.map((r, i) => (
                     <tr key={i}>
                       <td>{r.id}</td><td>{r.nome}</td><td>{r.marca}</td><td>{r.categoria}</td>
-                      <td>{r.preco}</td><td>{r.tamanho}</td><td>{r.condicao}</td>
+                      <td>{r.preco}</td><td>{r.tamanho}</td><td>{r.condicao}</td><td>{r.status}</td>
                     </tr>
                   ))}
                 </tbody>
