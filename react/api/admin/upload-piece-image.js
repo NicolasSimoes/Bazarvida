@@ -25,7 +25,8 @@ export default async function handler(req, res) {
   const path = id + '/' + randomUUID() + '.jpg';
   const { error: upErr } = await supabase.storage.from('pecas').upload(path, buffer, {
     contentType: 'image/jpeg',
-    upsert: false
+    upsert: false,
+    cacheControl: '31536000'
   });
   if (upErr) return res.status(500).json({ error: upErr.message });
 

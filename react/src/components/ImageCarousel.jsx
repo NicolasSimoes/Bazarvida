@@ -27,7 +27,7 @@ export default function ImageCarousel({ images, alt }) {
     <div className="carousel">
       <div className="carousel-track" ref={trackRef} onScroll={handleScroll}>
         {images.map((img) => (
-          <img key={img.id} src={img.url} alt={alt} loading="lazy" className="carousel-slide" />
+          <img key={img.id} src={img.url} alt={alt} loading="lazy" decoding="async" className="carousel-slide" />
         ))}
       </div>
       {index > 0 && (

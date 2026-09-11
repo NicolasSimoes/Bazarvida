@@ -21,7 +21,7 @@ export default function PieceCard({ piece, selected, onToggle }) {
     >
       <div className="thumb">
         {images.length === 0 && <span className="empty">foto {piece.id}</span>}
-        {images.length === 1 && <img src={images[0].url} alt={alt} loading="lazy" />}
+        {images.length === 1 && <img src={images[0].url} alt={alt} loading="lazy" decoding="async" />}
         {images.length > 1 && <ImageCarousel images={images} alt={alt} />}
         <span className="tag">{piece.id}</span>
         {disponivel && <span className="checkbox" aria-hidden="true">{selected ? '✓' : ''}</span>}
