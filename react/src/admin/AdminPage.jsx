@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { Fragment, useEffect, useMemo, useState } from 'react';
 import * as XLSX from 'xlsx';
 import { supabase } from '../supabaseClient.js';
 import PieceImagesManager from './PieceImagesManager.jsx';
@@ -210,6 +210,15 @@ export default function AdminPage() {
     );
   }, [pieces, piecesSearch]);
 
+  const groupedPieces = useMemo(() => {
+    const groups = {};
+    for (const p of filteredPieces) {
+      const key = p.cat || 'Sem categoria';
+      (groups[key] ??= []).push(p);
+    }
+    return Object.entries(groups).sort(([a], [b]) => a.localeCompare(b, 'pt-BR'));
+  }, [filteredPieces]);
+
   if (!authenticated) {
     return (
       <div className="admin-page admin-login">
@@ -331,42 +340,49 @@ export default function AdminPage() {
                 </tr>
               </thead>
               <tbody>
-                {filteredPieces.map((p) => (
-                  <tr key={p.id}>
-                    <td>{p.id}</td>
-                    <td>{p.name}</td>
-                    <td>{p.brand}</td>
-                    <td>
-                      <input
-                        type="text"
-                        inputMode="decimal"
-                        className="admin-price-input"
-                        value={priceDrafts[p.id] ?? String(p.price)}
-                        onChange={(e) => handlePriceChange(p.id, e.target.value)}
-                        onBlur={() => commitPrice(p.id)}
-                        disabled={savingId === p.id}
-                      />
-                    </td>
-                    <td>
-                      <button
-                        className={'admin-status-toggle admin-status-toggle--' + p.status}
-                        onClick={() => toggleStatus(p)}
-                        disabled={savingId === p.id}
-                      >
-                        {p.status === 'indisponivel' ? 'Indisponível' : 'Disponível'}
-                      </button>
-                    </td>
-                    <td>
-                      <button className="admin-photos-btn" onClick={() => setManagingPiece(p)}>
-                        Fotos ({imageCounts[p.id] ?? 0})
-                      </button>
-                    </td>
-                    <td>
-                      <button className="admin-photos-btn" onClick={() => setEditingPiece(p)}>
-                        Editar
-                      </button>
-                    </td>
-                  </tr>
+                {groupedPieces.map(([cat, list]) => (
+                  <Fragment key={cat}>
+                    <tr className="admin-table-group-row">
+                      <td colSpan={7}>{cat} ({list.length})</td>
+                    </tr>
+                    {list.map((p) => (
+                      <tr key={p.id}>
+                        <td>{p.id}</td>
+                        <td>{p.name}</td>
+                        <td>{p.brand}</td>
+                        <td>
+                          <input
+                            type="text"
+                            inputMode="decimal"
+                            className="admin-price-input"
+                            value={priceDrafts[p.id] ?? String(p.price)}
+                            onChange={(e) => handlePriceChange(p.id, e.target.value)}
+                            onBlur={() => commitPrice(p.id)}
+                            disabled={savingId === p.id}
+                          />
+                        </td>
+                        <td>
+                          <button
+                            className={'admin-status-toggle admin-status-toggle--' + p.status}
+                            onClick={() => toggleStatus(p)}
+                            disabled={savingId === p.id}
+                          >
+                            {p.status === 'indisponivel' ? 'Indisponível' : 'Disponível'}
+                          </button>
+                        </td>
+                        <td>
+                          <button className="admin-photos-btn" onClick={() => setManagingPiece(p)}>
+                            Fotos ({imageCounts[p.id] ?? 0})
+                          </button>
+                        </td>
+                        <td>
+                          <button className="admin-photos-btn" onClick={() => setEditingPiece(p)}>
+                            Editar
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </Fragment>
                 ))}
               </tbody>
             </table>
