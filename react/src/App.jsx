@@ -4,12 +4,14 @@ import { BAZAR } from './config.js';
 import { waLink, reservaMultiplaLink } from './whatsapp.js';
 import PieceCard from './components/PieceCard.jsx';
 import Star from './components/Star.jsx';
+import BrandFilter from './components/BrandFilter.jsx';
 
 export default function App() {
   const [pieces, setPieces] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(null);
   const [cat, setCat] = useState('Todas');
+  const [brand, setBrand] = useState('Todas');
   const [selected, setSelected] = useState(() => new Set());
 
   useEffect(() => {
@@ -29,7 +31,14 @@ export default function App() {
   }, []);
 
   const cats = useMemo(() => ['Todas', ...new Set(pieces.map((p) => p.cat))], [pieces]);
-  const list = useMemo(() => (cat === 'Todas' ? pieces : pieces.filter((p) => p.cat === cat)), [cat, pieces]);
+  const brands = useMemo(
+    () => [...new Set(pieces.map((p) => p.brand))].filter(Boolean).sort((a, b) => a.localeCompare(b, 'pt-BR')),
+    [pieces]
+  );
+  const list = useMemo(
+    () => pieces.filter((p) => (cat === 'Todas' || p.cat === cat) && (brand === 'Todas' || p.brand === brand)),
+    [cat, brand, pieces]
+  );
 
   function toggleSelect(id) {
     const piece = pieces.find((p) => p.id === id);
@@ -88,7 +97,9 @@ export default function App() {
         <div className="section-head">
           <h2>As peças</h2>
           <span className="count">
-            {list.length} {list.length === 1 ? 'peça' : 'peças'}{cat === 'Todas' ? '' : ' em ' + cat}
+            {list.length} {list.length === 1 ? 'peça' : 'peças'}
+            {cat !== 'Todas' ? ' em ' + cat : ''}
+            {brand !== 'Todas' ? (cat !== 'Todas' ? ' · ' : ' de ') + brand : ''}
           </span>
         </div>
 
@@ -96,6 +107,7 @@ export default function App() {
           {cats.map((c) => (
             <button key={c} aria-pressed={c === cat} onClick={() => setCat(c)}>{c}</button>
           ))}
+          <BrandFilter brands={brands} value={brand} onChange={setBrand} />
         </div>
 
         {loading && <p className="status">Carregando peças…</p>}

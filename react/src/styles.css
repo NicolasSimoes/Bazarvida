@@ -98,6 +98,45 @@ h1.title .underline { border-bottom: 6px solid var(--pink); padding-bottom: 2px;
 .filters button:hover { opacity: .85; }
 .filters button[aria-pressed='true'] { border-color: var(--pink); background: var(--pink); color: var(--navy); }
 
+.brand-trigger { display: inline-flex; align-items: center; gap: 7px; border-style: dashed !important; }
+.brand-trigger svg { width: 11px; height: 11px; flex-shrink: 0; }
+.brand-trigger--active { border-style: solid !important; border-color: var(--pink); background: var(--pink); color: var(--navy); }
+
+.sheet-overlay {
+  position: fixed; inset: 0; background: rgba(6,12,26,.9);
+  display: flex; align-items: flex-end; justify-content: center; z-index: 60;
+}
+.sheet-panel {
+  background: var(--navy-card); width: 100%; max-width: 480px;
+  border-radius: 26px 26px 0 0; padding: 12px 22px calc(20px + env(safe-area-inset-bottom));
+  max-height: 75vh; display: flex; flex-direction: column; gap: 14px;
+  animation: sheetUp .22s ease-out; box-shadow: 0 -12px 40px rgba(0,0,0,.4);
+}
+@keyframes sheetUp {
+  from { transform: translateY(28px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+.sheet-handle { width: 40px; height: 4px; border-radius: 999px; background: rgba(255,255,255,.25); margin: 2px auto 0; }
+.sheet-header { display: flex; align-items: center; justify-content: space-between; }
+.sheet-header h3 { margin: 0; font-size: 19px; font-weight: 800; }
+.sheet-close {
+  background: transparent; border: none; color: #fff; font-size: 26px;
+  line-height: 1; cursor: pointer; padding: 0;
+}
+.sheet-search {
+  background: var(--navy); border: 1px solid rgba(255,255,255,.2); border-radius: 12px;
+  padding: 13px 16px; color: #fff; font-size: 15px; font-family: inherit;
+}
+.sheet-list { overflow-y: auto; display: flex; flex-direction: column; gap: 2px; }
+.sheet-option {
+  text-align: left; background: transparent; border: none; color: #EAF0FF;
+  padding: 13px 12px; border-radius: 10px; font-size: 15px; font-weight: 600;
+  font-family: inherit; cursor: pointer;
+}
+.sheet-option:hover { background: rgba(255,255,255,.06); }
+.sheet-option--active { color: var(--pink); font-weight: 800; }
+.sheet-empty { text-align: center; opacity: .6; padding: 24px 0; margin: 0; }
+
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr)); gap: clamp(14px, 2vw, 24px); }
 
 .card {
