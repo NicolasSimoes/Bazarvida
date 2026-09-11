@@ -15,9 +15,9 @@ export default function App() {
   useEffect(() => {
     supabase
       .from('pieces')
-      .select('*, piece_images(id, url, created_at)')
+      .select('*, piece_images(id, url, position)')
       .order('created_at', { ascending: false })
-      .order('created_at', { ascending: true, referencedTable: 'piece_images' })
+      .order('position', { ascending: true, referencedTable: 'piece_images' })
       .then(({ data, error }) => {
         if (error) {
           setLoadError(error.message);

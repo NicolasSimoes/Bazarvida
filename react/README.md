@@ -87,11 +87,12 @@ Acesse `/admin`, entre com a senha (`ADMIN_PASSWORD`) e:
    **preço** (clique no campo, mude o valor, saia do campo pra salvar), alternar
    **Disponível ↔ Indisponível** num clique, e clicar em **Fotos (N)** pra abrir o
    gerenciador de fotos daquela peça: envie quantas imagens quiser (qualquer formato,
-   convertido pra JPEG automaticamente no navegador antes do envio) e apague fotos
-   enviadas por engano. Fotos de iPhone em `.heic` podem não converter em todos os
-   navegadores — configure a câmera em Ajustes → Câmera → Formatos → "Mais compatível",
-   ou converta antes de subir. Peças com mais de uma foto mostram um carrossel
-   deslizável na página pública.
+   convertido pra JPEG automaticamente no navegador antes do envio), apague fotos
+   enviadas por engano, e use as setinhas ‹ › pra reordenar — a ordem escolhida ali
+   é a ordem do carrossel na página pública. Fotos de iPhone em `.heic` podem não
+   converter em todos os navegadores — configure a câmera em Ajustes → Câmera →
+   Formatos → "Mais compatível", ou converta antes de subir. Peças com mais de uma
+   foto mostram um carrossel deslizável na página pública.
 
 ## Status "Indisponível"
 

@@ -60,6 +60,24 @@ begin
     create policy "piece_images_public_read" on public.piece_images for select using (true);
   end if;
 end $$;
+
+alter table public.piece_images add column if not exists position integer not null default 0;
+
+with groups_to_backfill as (
+  select piece_id
+  from public.piece_images
+  group by piece_id
+  having count(*) > 1 and max(position) = 0
+),
+ranked as (
+  select id, row_number() over (partition by piece_id order by created_at, id) - 1 as rn
+  from public.piece_images
+  where piece_id in (select piece_id from groups_to_backfill)
+)
+update public.piece_images pi
+set position = ranked.rn
+from ranked
+where pi.id = ranked.id;
 `;
 
 const client = new Client({

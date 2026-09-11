@@ -32,9 +32,18 @@ export default async function handler(req, res) {
 
   const { data: pub } = supabase.storage.from('pecas').getPublicUrl(path);
 
+  const { data: last } = await supabase
+    .from('piece_images')
+    .select('position')
+    .eq('piece_id', id)
+    .order('position', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  const nextPosition = last ? last.position + 1 : 0;
+
   const { data: image, error: insErr } = await supabase
     .from('piece_images')
-    .insert({ piece_id: id, storage_path: path, url: pub.publicUrl })
+    .insert({ piece_id: id, storage_path: path, url: pub.publicUrl, position: nextPosition })
     .select()
     .single();
 

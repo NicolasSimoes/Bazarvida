@@ -216,10 +216,17 @@
   gap: 10px;
 }
 
-.piece-image-item { position: relative; aspect-ratio: 3 / 4; border-radius: 10px; overflow: hidden; }
-.piece-image-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.piece-image-item button {
-  position: absolute; top: 6px; right: 6px; width: auto !important;
-  padding: 4px 8px !important; font-size: 11px !important;
+.piece-image-item { border-radius: 10px; overflow: hidden; background: var(--navy); }
+.piece-image-item img { width: 100%; aspect-ratio: 3 / 4; object-fit: cover; display: block; }
+.piece-image-actions {
+  display: flex; align-items: center; justify-content: space-between; gap: 4px;
+  padding: 6px;
+}
+.piece-image-actions button {
+  width: auto !important; padding: 4px 8px !important; font-size: 11px !important;
+  background: rgba(255,255,255,.08) !important; color: #fff !important;
+}
+.piece-image-actions button:disabled { opacity: .3; }
+.piece-image-actions button:nth-child(2) {
   background: rgba(19,38,79,.75) !important; color: #ff9db8 !important;
 }

@@ -9,6 +9,7 @@ export default function PieceImagesManager({ piece, password, onClose, onChanged
   const [uploadStatuses, setUploadStatuses] = useState([]);
   const [sendingImages, setSendingImages] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
+  const [movingId, setMovingId] = useState(null);
 
   async function loadImages() {
     setLoading(true);
@@ -17,7 +18,7 @@ export default function PieceImagesManager({ piece, password, onClose, onChanged
       .from('piece_images')
       .select('*')
       .eq('piece_id', piece.id)
-      .order('created_at');
+      .order('position');
     if (err) setError(err.message);
     else setImages(data ?? []);
     setLoading(false);
@@ -88,6 +89,35 @@ export default function PieceImagesManager({ piece, password, onClose, onChanged
     }
   }
 
+  async function handleMove(imageId, direction) {
+    const index = images.findIndex((img) => img.id === imageId);
+    const swapIndex = direction === 'left' ? index - 1 : index + 1;
+    if (swapIndex < 0 || swapIndex >= images.length) return;
+
+    setMovingId(imageId);
+    try {
+      const res = await fetch('/api/admin/move-piece-image', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-admin-password': password },
+        body: JSON.stringify({ imageId, direction })
+      });
+      const body = await res.json();
+      if (!res.ok) {
+        setError(body.error || 'falha ao mover foto');
+        return;
+      }
+      setImages((prev) => {
+        const next = [...prev];
+        [next[index], next[swapIndex]] = [next[swapIndex], next[index]];
+        return next;
+      });
+    } catch (err) {
+      setError('Erro de conexão: ' + err.message);
+    } finally {
+      setMovingId(null);
+    }
+  }
+
   const imagesSent = uploadStatuses.filter((s) => s.status === 'ok' || s.status === 'erro').length;
 
   return (
@@ -126,14 +156,30 @@ export default function PieceImagesManager({ piece, password, onClose, onChanged
           <p className="admin-hint">Nenhuma foto cadastrada ainda.</p>
         )}
 
+        {!loading && images.length > 1 && (
+          <p className="admin-hint">A ordem abaixo é a ordem do carrossel na página pública.</p>
+        )}
+
         {!loading && images.length > 0 && (
           <div className="piece-images-grid">
-            {images.map((img) => (
+            {images.map((img, i) => (
               <div key={img.id} className="piece-image-item">
                 <img src={img.url} alt="" />
-                <button onClick={() => handleDelete(img.id)} disabled={deletingId === img.id}>
-                  {deletingId === img.id ? '…' : 'Excluir'}
-                </button>
+                <div className="piece-image-actions">
+                  <button
+                    onClick={() => handleMove(img.id, 'left')}
+                    disabled={i === 0 || movingId !== null}
+                    aria-label="Mover pra esquerda"
+                  >‹</button>
+                  <button onClick={() => handleDelete(img.id)} disabled={deletingId === img.id}>
+                    {deletingId === img.id ? '…' : 'Excluir'}
+                  </button>
+                  <button
+                    onClick={() => handleMove(img.id, 'right')}
+                    disabled={i === images.length - 1 || movingId !== null}
+                    aria-label="Mover pra direita"
+                  >›</button>
+                </div>
               </div>
             ))}
           </div>
