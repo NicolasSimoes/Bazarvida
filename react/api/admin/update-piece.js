@@ -4,7 +4,7 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'method not allowed' });
   if (!checkPassword(req)) return res.status(401).json({ error: 'senha inválida' });
 
-  const { id, price, status } = req.body || {};
+  const { id, price, status, name, brand, cat, size, condition } = req.body || {};
   if (!id) return res.status(400).json({ error: 'id ausente' });
 
   const patch = { updated_at: new Date().toISOString() };
@@ -22,8 +22,18 @@ export default async function handler(req, res) {
     patch.status = status;
   }
 
+  const textFields = { name, brand, cat, size, condition };
+  for (const [field, value] of Object.entries(textFields)) {
+    if (value === undefined) continue;
+    const trimmed = String(value).trim();
+    if (field !== 'condition' && !trimmed) {
+      return res.status(400).json({ error: field + ' não pode ficar vazio' });
+    }
+    patch[field] = trimmed;
+  }
+
   if (Object.keys(patch).length === 1) {
-    return res.status(400).json({ error: 'nada para atualizar (envie price e/ou status)' });
+    return res.status(400).json({ error: 'nada para atualizar' });
   }
 
   const supabase = getSupabaseAdmin();

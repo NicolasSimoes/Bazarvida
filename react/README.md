@@ -85,7 +85,8 @@ Acesse `/admin`, entre com a senha (`ADMIN_PASSWORD`) e:
    linhas totalmente vazias (comuns em planilhas exportadas do Excel) são ignoradas.
 2. **Peças cadastradas**: tabela com todas as peças já no banco. Dá pra editar o
    **preço** (clique no campo, mude o valor, saia do campo pra salvar), alternar
-   **Disponível ↔ Indisponível** num clique, e clicar em **Fotos (N)** pra abrir o
+   **Disponível ↔ Indisponível** num clique, clicar em **Editar** pra mudar nome,
+   marca, categoria, tamanho ou condição, e clicar em **Fotos (N)** pra abrir o
    gerenciador de fotos daquela peça: envie quantas imagens quiser (qualquer formato,
    convertido pra JPEG automaticamente no navegador antes do envio), apague fotos
    enviadas por engano, e use as setinhas ‹ › pra reordenar — a ordem escolhida ali

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import * as XLSX from 'xlsx';
 import { supabase } from '../supabaseClient.js';
 import PieceImagesManager from './PieceImagesManager.jsx';
+import PieceEditModal from './PieceEditModal.jsx';
 import './admin.css';
 
 const SESSION_KEY = 'adminPassword';
@@ -59,6 +60,7 @@ export default function AdminPage() {
   const [piecesSearch, setPiecesSearch] = useState('');
   const [imageCounts, setImageCounts] = useState({});
   const [managingPiece, setManagingPiece] = useState(null);
+  const [editingPiece, setEditingPiece] = useState(null);
 
   const authenticated = Boolean(password);
 
@@ -296,9 +298,10 @@ export default function AdminPage() {
       <section className="admin-section">
         <h2>2. Peças cadastradas</h2>
         <p className="admin-hint">
-          Ajuste preço ou disponibilidade sem precisar reenviar a planilha inteira, e clique em
-          "Fotos" pra subir ou apagar as fotos de cada peça.
-          Peças "Indisponível" continuam aparecendo na página pública, só ficam travadas pra seleção.
+          Ajuste preço ou disponibilidade direto na tabela, clique em "Editar" pra mudar nome,
+          marca, categoria, tamanho ou condição, e em "Fotos" pra subir ou apagar as fotos de
+          cada peça. Peças "Indisponível" continuam aparecendo na página pública, só ficam
+          travadas pra seleção.
         </p>
 
         {piecesError && <p className="admin-error">{piecesError}</p>}
@@ -324,7 +327,7 @@ export default function AdminPage() {
             <table className="admin-table admin-table-pieces">
               <thead>
                 <tr>
-                  <th>id</th><th>nome</th><th>marca</th><th>preço</th><th>status</th><th>fotos</th>
+                  <th>id</th><th>nome</th><th>marca</th><th>preço</th><th>status</th><th>fotos</th><th></th>
                 </tr>
               </thead>
               <tbody>
@@ -358,6 +361,11 @@ export default function AdminPage() {
                         Fotos ({imageCounts[p.id] ?? 0})
                       </button>
                     </td>
+                    <td>
+                      <button className="admin-photos-btn" onClick={() => setEditingPiece(p)}>
+                        Editar
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -380,6 +388,15 @@ export default function AdminPage() {
           password={password}
           onClose={() => setManagingPiece(null)}
           onChanged={loadImageCounts}
+        />
+      )}
+
+      {editingPiece && (
+        <PieceEditModal
+          piece={editingPiece}
+          password={password}
+          onClose={() => setEditingPiece(null)}
+          onSaved={(updated) => setPieces((prev) => prev.map((p) => (p.id === updated.id ? updated : p)))}
         />
       )}
     </div>
