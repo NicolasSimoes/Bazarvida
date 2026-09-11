@@ -56,7 +56,7 @@ export default function App() {
           <nav>
             <a href="#pecas">Peças</a>
             <a href="#marcas">Marcas</a>
-            <a href="#visita">Como visitar</a>
+            <a href="#visita">Como reservar</a>
           </nav>
         </header>
 
