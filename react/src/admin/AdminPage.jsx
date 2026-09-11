@@ -58,6 +58,8 @@ export default function AdminPage() {
   const [savingId, setSavingId] = useState(null);
   const [priceDrafts, setPriceDrafts] = useState({});
   const [piecesSearch, setPiecesSearch] = useState('');
+  const [catFilter, setCatFilter] = useState('Todas');
+  const [brandFilter, setBrandFilter] = useState('Todas');
   const [imageCounts, setImageCounts] = useState({});
   const [managingPiece, setManagingPiece] = useState(null);
   const [editingPiece, setEditingPiece] = useState(null);
@@ -202,13 +204,24 @@ export default function AdminPage() {
 
   const preview = useMemo(() => rows.slice(0, 10), [rows]);
 
+  const categories = useMemo(
+    () => ['Todas', ...new Set(pieces.map((p) => p.cat).filter(Boolean))].sort((a, b) => (a === 'Todas' ? -1 : b === 'Todas' ? 1 : a.localeCompare(b, 'pt-BR'))),
+    [pieces]
+  );
+  const brands = useMemo(
+    () => ['Todas', ...new Set(pieces.map((p) => p.brand).filter(Boolean))].sort((a, b) => (a === 'Todas' ? -1 : b === 'Todas' ? 1 : a.localeCompare(b, 'pt-BR'))),
+    [pieces]
+  );
+
   const filteredPieces = useMemo(() => {
     const q = stripAccents(piecesSearch);
-    if (!q) return pieces;
-    return pieces.filter((p) =>
-      [p.id, p.name, p.brand].some((v) => stripAccents(String(v ?? '')).includes(q))
-    );
-  }, [pieces, piecesSearch]);
+    return pieces.filter((p) => {
+      if (catFilter !== 'Todas' && p.cat !== catFilter) return false;
+      if (brandFilter !== 'Todas' && p.brand !== brandFilter) return false;
+      if (!q) return true;
+      return [p.id, p.name, p.brand].some((v) => stripAccents(String(v ?? '')).includes(q));
+    });
+  }, [pieces, piecesSearch, catFilter, brandFilter]);
 
   const groupedPieces = useMemo(() => {
     const groups = {};
@@ -318,13 +331,21 @@ export default function AdminPage() {
 
         {!piecesLoading && pieces.length > 0 && (
           <>
-            <input
-              type="text"
-              className="admin-search"
-              placeholder="Buscar por id, nome ou marca…"
-              value={piecesSearch}
-              onChange={(e) => setPiecesSearch(e.target.value)}
-            />
+            <div className="admin-filters">
+              <input
+                type="text"
+                className="admin-search"
+                placeholder="Buscar por id, nome ou marca…"
+                value={piecesSearch}
+                onChange={(e) => setPiecesSearch(e.target.value)}
+              />
+              <select value={catFilter} onChange={(e) => setCatFilter(e.target.value)}>
+                {categories.map((c) => <option key={c} value={c}>{c}</option>)}
+              </select>
+              <select value={brandFilter} onChange={(e) => setBrandFilter(e.target.value)}>
+                {brands.map((b) => <option key={b} value={b}>{b}</option>)}
+              </select>
+            </div>
             <p className="admin-hint">
               {filteredPieces.length} de {pieces.length} peça(s)
             </p>

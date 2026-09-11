@@ -39,6 +39,15 @@
   font-size: 14px;
 }
 
+.admin-page select {
+  background: var(--navy-card);
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: #fff;
+  font-size: 15px;
+}
+
 .admin-page button {
   background: var(--pink);
   color: var(--navy);
@@ -93,9 +102,19 @@
   font-size: 14px;
 }
 
+.admin-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
 .admin-search {
-  width: 100%;
+  flex: 1 1 220px;
   max-width: 320px;
+}
+
+.admin-filters select {
+  flex: 0 1 180px;
 }
 
 .admin-table-wrap {
